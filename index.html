@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Simulador bilingüe de sensibilidad, especificidad, valores predictivos y curvas ROC para pruebas diagnósticas.">
+  <title>Rendimiento de las pruebas diagnósticas</title>
+  <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="mobile-note" id="mobileNote" hidden>
+    <div class="mobile-note__box" role="dialog" aria-modal="true" aria-labelledby="mobileTitle">
+      <h2 id="mobileTitle" data-i18n="mobileTitle"></h2>
+      <p data-i18n="mobileText"></p>
+      <button id="dismissMobile" class="button button--primary" data-i18n="continue"></button>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Inicio">
+      <img src="assets/mark.svg" alt="">
+      <span data-i18n="brand"></span>
+    </a>
+    <label class="language-picker">
+      <span data-i18n="language"></span>
+      <select id="languageSelect" aria-label="Idioma">
+        <option value="es">Castellano</option>
+        <option value="ca">Català</option>
+      </select>
+    </label>
+  </header>
+
+  <main class="container" id="top">
+    <section class="card intro-card">
+      <h1 data-i18n="title"></h1>
+      <p class="subtitle" data-i18n="subtitle"></p>
+      <div class="scenario-box">
+        <h2 data-i18n="whyTitle"></h2>
+        <p data-i18n="whyText"></p>
+        <p data-i18n="exampleText"></p>
+      </div>
+      <nav class="main-tabs" aria-label="Contenidos">
+        <button class="main-tab active" data-panel="experiment" data-i18n="experiment"></button>
+        <button class="main-tab" data-panel="learn" data-i18n="review"></button>
+      </nav>
+    </section>
+
+    <section class="main-panel active" id="experiment" aria-labelledby="experiment-tab">
+      <div class="card">
+        <p class="instructions" data-i18n="instructions"></p>
+
+        <div class="viz-grid">
+          <div class="viz-main">
+            <div class="dataset-selector" role="group" aria-label="Conjunto de datos">
+              <button class="dataset-button active" data-dataset="separated" data-i18n="severe"></button>
+              <button class="dataset-button" data-dataset="overlap" data-i18n="subtle"></button>
+              <button class="dataset-button" data-dataset="low" data-i18n="lowPrevalence"></button>
+            </div>
+
+            <div class="dataset-explanation" id="datasetExplanation" aria-live="polite"></div>
+
+            <label class="prevalence-control" id="prevalenceControl" hidden>
+              <span><span data-i18n="prevalence"></span>: <strong id="prevalenceValue">10%</strong></span>
+              <input id="prevalenceSlider" type="range" min="5" max="50" value="10" step="1">
+            </label>
+
+            <div class="distribution-shell">
+              <div class="zone-labels" aria-hidden="true">
+                <span data-i18n="negativeZone"></span>
+                <span data-i18n="positiveZone"></span>
+              </div>
+              <div class="chart" id="distributionChart" role="slider" aria-valuemin="5" aria-valuemax="95" aria-valuenow="50" tabindex="0">
+                <div class="threshold" id="threshold">
+                  <span id="thresholdLabel"></span>
+                </div>
+              </div>
+              <div class="axis"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+              <p class="axis-title" data-i18n="testScore"></p>
+              <div class="legend">
+                <span><i class="dot dot--healthy"></i><span data-i18n="healthy"></span></span>
+                <span><i class="dot dot--disease"></i><span data-i18n="disease"></span></span>
+              </div>
+            </div>
+          </div>
+
+          <aside class="viz-side">
+            <div class="matrix" aria-label="Matriz de confusión">
+              <div></div><strong data-i18n="testPositive"></strong><strong data-i18n="testNegative"></strong>
+              <strong data-i18n="actuallyDisease"></strong>
+              <div class="matrix-cell tp"><span data-i18n="tp"></span><b id="tp">0</b></div>
+              <div class="matrix-cell fn"><span data-i18n="fn"></span><b id="fn">0</b></div>
+              <strong data-i18n="actuallyHealthy"></strong>
+              <div class="matrix-cell fp"><span data-i18n="fp"></span><b id="fp">0</b></div>
+              <div class="matrix-cell tn"><span data-i18n="tn"></span><b id="tn">0</b></div>
+            </div>
+
+            <div class="curve-card">
+              <div class="curve-toggle">
+                <button class="curve-button active" data-curve="roc">ROC</button>
+                <button class="curve-button" data-curve="pr">PR</button>
+              </div>
+              <div class="canvas-wrap">
+                <canvas id="curveCanvas" width="360" height="280"></canvas>
+                <span class="y-label" id="yLabel"></span>
+                <span class="x-label" id="xLabel"></span>
+              </div>
+              <p class="auc">AUC: <strong id="auc">0.00</strong><span class="help" tabindex="0" data-i18n-title="aucHelp">?</span></p>
+            </div>
+          </aside>
+        </div>
+
+        <div class="metrics" id="metrics">
+          <article class="metric"><h3 data-i18n="accuracy"></h3><b id="accuracy">0%</b><code>(VP+VN) / Total</code><p data-i18n="accuracyHelp"></p></article>
+          <article class="metric"><h3 data-i18n="sensitivity"></h3><b id="sensitivity">0%</b><code>VP / (VP+FN)</code><p data-i18n="sensitivityHelp"></p></article>
+          <article class="metric"><h3 data-i18n="specificity"></h3><b id="specificity">0%</b><code>VN / (VN+FP)</code><p data-i18n="specificityHelp"></p></article>
+          <article class="metric"><h3 data-i18n="fpr"></h3><b id="fpr">0%</b><code>FP / (FP+VN)</code><p data-i18n="fprHelp"></p></article>
+          <article class="metric"><h3 data-i18n="ppv"></h3><b id="ppv">0%</b><code>VP / (VP+FP)</code><p data-i18n="ppvHelp"></p></article>
+          <article class="metric"><h3 data-i18n="npv"></h3><b id="npv">0%</b><code>VN / (VN+FN)</code><p data-i18n="npvHelp"></p></article>
+          <article class="metric"><h3>F1</h3><b id="f1">0%</b><code>2·P·S / (P+S)</code><p data-i18n="f1Help"></p></article>
+        </div>
+
+        <div class="interpretation">
+          <h2 data-i18n="interpretationTitle"></h2>
+          <p id="interpretationText"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title" data-i18n="tryTitle"></h2>
+        <p data-i18n="tryIntro"></p>
+        <div class="exercise">
+          <h3 data-i18n="screeningTitle"></h3><p data-i18n="screeningQuestion"></p>
+          <button class="answer-button" data-i18n="showAnswer"></button>
+          <div class="answer"><p data-i18n="screeningAnswer"></p></div>
+        </div>
+        <div class="exercise">
+          <h3 data-i18n="confirmTitle"></h3><p data-i18n="confirmQuestion"></p>
+          <button class="answer-button" data-i18n="showAnswer"></button>
+          <div class="answer"><p data-i18n="confirmAnswer"></p></div>
+        </div>
+        <div class="exercise">
+          <h3 data-i18n="prevalenceTitle"></h3><p data-i18n="prevalenceQuestion"></p>
+          <button class="answer-button" data-i18n="showAnswer"></button>
+          <div class="answer"><p data-i18n="prevalenceAnswer"></p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-panel" id="learn">
+      <div class="card">
+        <div class="concept-tabs">
+          <button class="concept-tab active" data-concept="outcomes" data-i18n="outcomesTitle"></button>
+          <button class="concept-tab" data-concept="keyMetrics" data-i18n="metricsTitle"></button>
+          <button class="concept-tab" data-concept="tradeoffs" data-i18n="tradeoffsTitle"></button>
+        </div>
+        <article class="concept-panel active" id="outcomes">
+          <h2 data-i18n="outcomesTitle"></h2><p data-i18n="outcomesIntro"></p>
+          <div class="outcomes-grid">
+            <div class="outcome tp"><h3 data-i18n="tpLong"></h3><p data-i18n="tpText"></p></div>
+            <div class="outcome fn"><h3 data-i18n="fnLong"></h3><p data-i18n="fnText"></p></div>
+            <div class="outcome fp"><h3 data-i18n="fpLong"></h3><p data-i18n="fpText"></p></div>
+            <div class="outcome tn"><h3 data-i18n="tnLong"></h3><p data-i18n="tnText"></p></div>
+          </div>
+        </article>
+        <article class="concept-panel" id="keyMetrics">
+          <h2 data-i18n="metricsTitle"></h2>
+          <div class="table-scroll"><table><thead><tr><th data-i18n="metric"></th><th data-i18n="question"></th><th data-i18n="formula"></th></tr></thead><tbody id="metricsTable"></tbody></table></div>
+        </article>
+        <article class="concept-panel" id="tradeoffs">
+          <h2 data-i18n="tradeoffsTitle"></h2><p data-i18n="tradeoffsIntro"></p>
+          <div class="tradeoff-grid">
+            <div class="tradeoff tradeoff--low"><h3 data-i18n="lowerThreshold"></h3><ul id="lowThresholdList"></ul></div>
+            <div class="tradeoff tradeoff--high"><h3 data-i18n="higherThreshold"></h3><ul id="highThresholdList"></ul></div>
+          </div>
+          <div class="scenario-box"><h2 data-i18n="contextTitle"></h2><p data-i18n="contextText"></p></div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p data-i18n="footer"></p>
+    <p><a href="https://stanfordmed.github.io/aimeded/ai-evaluation/" rel="noreferrer" target="_blank" data-i18n="inspiration"></a></p>
+  </footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
