@@ -10,6 +10,8 @@ Aplicación educativa interactiva y bilingüe (castellano/catalán) para explora
 
 La interfaz se inspira en el módulo educativo abierto [Explore AI Diagnostic Performance](https://stanfordmed.github.io/aimeded/ai-evaluation/) de Stanford Medicine, pero esta es una implementación independiente centrada en **respuestas de tests diagnósticos**, sin marca, analítica ni código de Stanford.
 
+La presentación utiliza la identidad visual vigente de la UAB: verde corporativo Pantone 355 C (`#009639`), paleta secundaria institucional y el logotipo oficial de la Facultat de Medicina. El pie incorpora la firma solicitada `Created by G.C. using dev@Friday` y el icono dev@Friday utilizado en la web de horarios.
+
 ## Ejecutar localmente
 
 No necesita compilación ni dependencias:

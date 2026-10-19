@@ -205,7 +205,7 @@ function drawCurve(metrics) {
     ctx.textAlign = 'center'; ctx.fillText(value.toFixed(2), x, height - padding + 17);
     ctx.textAlign = 'right'; ctx.fillText(value.toFixed(2), padding - 7, y + 4);
   }
-  ctx.strokeStyle = '#8c1515'; ctx.lineWidth = 3; ctx.beginPath();
+  ctx.strokeStyle = '#009639'; ctx.lineWidth = 3; ctx.beginPath();
   points.forEach((point, index) => {
     const x = padding + point.x * plotWidth; const y = height - padding - point.y * plotHeight;
     if (index === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
@@ -213,7 +213,7 @@ function drawCurve(metrics) {
   ctx.stroke();
   const activeX = curveType === 'roc' ? metrics.fpr : metrics.sensitivity;
   const activeY = curveType === 'roc' ? metrics.sensitivity : metrics.ppv;
-  ctx.fillStyle = '#620059'; ctx.beginPath(); ctx.arc(padding + activeX * plotWidth, height - padding - activeY * plotHeight, 8, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#e0007f'; ctx.beginPath(); ctx.arc(padding + activeX * plotWidth, height - padding - activeY * plotHeight, 8, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(padding + activeX * plotWidth, height - padding - activeY * plotHeight, 3.5, 0, Math.PI * 2); ctx.fill();
   document.querySelector('#auc').textContent = auc(points).toFixed(2);
   document.querySelector('#yLabel').textContent = t(curveType === 'roc' ? 'rocY' : 'prY');
