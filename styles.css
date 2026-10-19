@@ -139,9 +139,9 @@ th, td { padding: 12px; border-bottom: 1px solid #dce2e8; text-align: left; }
 th { background: #edf2f7; }
 
 footer { padding: 8px 20px 28px; color: rgb(255 255 255 / 92%); text-align: center; }
-footer a { color: white; }
 .creator-signature { display: flex; width: fit-content; align-items: center; justify-content: center; gap: 12px; margin: 0 auto 14px; padding: 10px 16px; border-radius: 12px; color: #172554; background: white; box-shadow: 0 6px 18px rgb(0 0 0 / 18%); }
 .creator-signature img { display: block; width: 46px; height: 46px; border-radius: 9px; object-fit: contain; }
+.inspiration-credit { margin-top: 8px; font-size: .62rem; opacity: .65; }
 .mobile-note { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgb(0 0 0 / 70%); }
 .mobile-note[hidden] { display: none; }
 .mobile-note__box { width: min(360px, 100%); padding: 26px; border-radius: 12px; background: white; text-align: center; }
